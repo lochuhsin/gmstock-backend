@@ -1,0 +1,16 @@
+services:
+
+  backend:
+    build: .
+    restart: always
+    environment:
+      PORT: 8000
+      POSTGRES_PASSWORD: root
+    ports:
+      - "8000:8000"
+    networks:
+      - grandma-backend
+
+networks:
+  grandma-backend:
+    driver: bridge
