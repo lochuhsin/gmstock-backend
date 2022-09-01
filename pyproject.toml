@@ -9,6 +9,13 @@ license = "n"
 python = "3.10.4"
 fastapi = "^0.81.0"
 uvicorn = {extras = ["standard"], version = "^0.18.3"}
+watchfiles = "^0.16.1"
+pymongo = "^4.2.0"
+pydantic = "^1.9.2"
+python-multipart = "^0.0.5"
+SQLAlchemy = "^1.4.40"
+alembic = "^1.8.1"
+pre-commit = "^2.20.0"
 
 [tool.poetry.dev-dependencies]
 

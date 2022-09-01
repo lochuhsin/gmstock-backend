@@ -5,12 +5,19 @@ services:
     restart: always
     environment:
       PORT: 8000
-      POSTGRES_PASSWORD: root
+      DOCKER_DEFAULT_PLATFORM: linux/amd64
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
     networks:
       - grandma-backend
+      - grandma-scheduler
 
 networks:
   grandma-backend:
     driver: bridge
+
+  grandma-scheduler:
+    name: gmstock-scheduler_grandma-scheduler
+    external: true

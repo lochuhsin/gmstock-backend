@@ -11,3 +11,13 @@ Adding package to poetry lock
 
 Activate virtual environment
 * poetry shell
+
+Startup
+* docker-compose -d --build
+
+Add migration
+
+1. go into docker container
+2. modify script.py.mako
+3. alembic revision -m "<purpose>"
+4. alembic upgrade head

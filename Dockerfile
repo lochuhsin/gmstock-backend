@@ -4,10 +4,24 @@ WORKDIR /app
 
 COPY . .
 
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+  # dependencies for building Python packages
+  build-essential \
+  # psycopg2 dependencies
+  libpq-dev \
+
+  git
+
 RUN pip install poetry
 
-RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
+RUN poetry export -f requirements.txt -o requirements.txt --without-hashes
 
 RUN pip install -r requirements.txt
 
-CMD uvicorn app:app --host 0.0.0.0 --port ${PORT}
+RUN pip uninstall psycopg2
+
+RUN pip3 install psycopg2-binary
+
+CMD uvicorn app:app --reload --host 0.0.0.0 --port ${PORT} --log-level "info"
