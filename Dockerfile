@@ -24,4 +24,4 @@ RUN pip uninstall psycopg2
 
 RUN pip3 install psycopg2-binary
 
-CMD uvicorn app:app --reload --host 0.0.0.0 --port ${PORT} --log-level "info"
+CMD make run
