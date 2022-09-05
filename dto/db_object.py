@@ -4,6 +4,16 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
+class Script(Base):
+    __tablename__ = 'script'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    description = Column(String)
+    filepath = Column(String)
+    created_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True))
+
+
 class Stocks(Base):
     __tablename__ = 'stocks'
     id = Column(Integer, primary_key=True)
@@ -76,7 +86,3 @@ class Indices(Base):
     table_update_date = Column(DateTime(timezone=True))
     global_ = Column("global", String)
     plan = Column(String)
-
-
-
-

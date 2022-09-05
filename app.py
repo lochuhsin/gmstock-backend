@@ -2,14 +2,14 @@ from fastapi import FastAPI
 import pymongo
 import logging
 from config import settings
-from routers import script_management, testing
+from routers import script_controller, testing
 from sqlalchemy_utils.functions import database_exists
 import time
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
 app = FastAPI()
-app.include_router(script_management.router)
+app.include_router(script_controller.router)
 app.include_router(testing.router)
 
 WAITTING_TIME = 10
