@@ -22,6 +22,6 @@ RUN pip install -r requirements.txt
 
 RUN pip uninstall psycopg2
 
-RUN pip3 install psycopg2-binary
+RUN pip3 install psycopg2
 
 CMD make run

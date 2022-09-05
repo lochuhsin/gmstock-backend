@@ -1,6 +1,7 @@
 import requests
+
 from config import settings
-from dto.api_object import TwelveDataInfo
+from dto.api import TwelveDataInfo
 
 
 def get_twelvedata_info() -> TwelveDataInfo:

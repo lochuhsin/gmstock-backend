@@ -6,7 +6,4 @@ class TwelveDataInfo(BaseModel):
     global_: list[str]
 
     class Config:
-        fields = {
-            'global_': 'global'
-        }
-
+        fields = {"global_": "global"}

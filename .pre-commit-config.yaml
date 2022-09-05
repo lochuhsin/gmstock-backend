@@ -1,17 +1,26 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v3.2.0
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
 -   repo: https://github.com/psf/black
-    rev: 21.12b0
+    rev: 22.3.0
     hooks:
     -   id: black
+        language: python
+        types: [ python ]
 
 -   repo: https://github.com/pycqa/flake8
     rev: ''  # pick a git hash / tag to point to
     hooks:
     -   id: flake8
         exclude: ^alembic/
+
+-   repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: ["--profile=black"]
