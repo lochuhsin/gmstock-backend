@@ -8,7 +8,7 @@ from config import settings
 from utils._singleton import Singleton
 
 
-class UniqueLookUpTable(metaclass=Singleton):
+class UniqueLookUpTableBase(metaclass=Singleton):
     def __init__(self, unique: Iterable[str] = None):
         self._unique_set: set = set(unique) if unique else set()
 
@@ -18,9 +18,12 @@ class UniqueLookUpTable(metaclass=Singleton):
     def __contains__(self, unique: str):
         return unique in self._unique_set
 
-    def get_unique(self) -> Generator:
+    def get_uniques(self) -> Generator:
         for unique in self._unique_set:
             yield unique
+
+    def add(self, unique: str):
+        self._unique_set.add(unique)
 
     def update(self, unique: Iterable[str]):
         self._unique_set.update(unique)
@@ -31,6 +34,26 @@ class UniqueLookUpTable(metaclass=Singleton):
     def remove(self, symbol: str):
         if symbol in self._unique_set:
             self._unique_set.remove(symbol)
+
+
+class UniqueStocksTable(UniqueLookUpTableBase):
+    ...
+
+
+class UniqueIndicesTable(UniqueLookUpTableBase):
+    ...
+
+
+class UniqueETFTable(UniqueLookUpTableBase):
+    ...
+
+
+class UniqueCryptoCurrencyTable(UniqueLookUpTableBase):
+    ...
+
+
+class UniqueForexPairTable(UniqueLookUpTableBase):
+    ...
 
 
 class BackendDB(metaclass=Singleton):

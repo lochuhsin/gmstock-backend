@@ -1,7 +1,9 @@
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/data",
-                   tags=["scripts"])
+from internal.data_service import get_timeseries
+from utils.util import unique_table_selector
+
+router = APIRouter(prefix="/data", tags=["data"])
 
 
 @router.get("/stocks")
@@ -27,3 +29,18 @@ async def list_etf():
 @router.get("/indices")
 async def list_indices():
     return {"status": 204}
+
+
+@router.get("/timeseries/{unique}")
+async def list_timseries(unique: str):
+    product, *_ = unique.split("_")
+    unique_table = unique_table_selector(product)
+    if unique not in unique_table:
+        return {"status": 404, "message": "unique not found"}
+    return {"status": 200, "result": get_timeseries(unique)}
+
+
+@router.get("/uniques/{product_type}")
+async def list_uniques(product_type: str):
+    unique_table = unique_table_selector(product_type)
+    return {"status": 200, "results": list(unique_table.get_uniques())}

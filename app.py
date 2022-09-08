@@ -7,13 +7,14 @@ from sqlalchemy_utils.functions import database_exists
 
 from config import settings
 from db.mongo import get_collections
-from routers import script_controller, testing
-from utils.singleton import UniqueLookUpTable
+from routers import data_controller, script_controller, testing
+from utils.util import unique_table_selector
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
 app = FastAPI()
 app.include_router(script_controller.router)
+app.include_router(data_controller.router)
 app.include_router(testing.router)
 
 WAITTING_TIME = 10
@@ -51,9 +52,22 @@ def check_postgres_exist():
     logger.info("Scheduler database checking complete")
 
 
+# collection name rule
+# stock_<symbol>_<mic_code>
+# forexpair_<symbol>_<currency_base>
+# cryptocurrency_<symbol>_<currency_base>
+# etf_<symbol>_<mic_code>
+# indices_<symbol>_<country>
 @app.on_event("startup")
 def initialize_symbol_table():
-    UniqueLookUpTable(unique=get_collections())
+    logger.info("start initializing unique symbol singleton")
+
+    for collection in get_collections():
+        table, *_ = collection.split("_")
+        if table == "dummy":
+            continue
+        unique_table = unique_table_selector(table)
+        unique_table.add(collection)
 
 
 @app.get("/")

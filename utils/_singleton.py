@@ -8,10 +8,8 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            logger.info("initializing Singleton")
             # initiate cls by calling original cls.__call__ method
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        logger.info("Already initialized Singleton")
         return cls._instances[cls]
 
 
