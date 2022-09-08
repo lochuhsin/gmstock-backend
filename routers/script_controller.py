@@ -1,8 +1,12 @@
+import logging
 from datetime import datetime
 
 from fastapi import APIRouter, UploadFile
 
 from internal.file_service import add_script, get_scripts
+
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.INFO)
 
 router = APIRouter(prefix="/scripts", tags=["scripts"])
 

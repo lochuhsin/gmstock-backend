@@ -7,6 +7,10 @@ from sqlalchemy.orm import Session
 
 from config import settings
 from dto.db_object import Stocks
+from utils.singleton import MongoDB, UniqueLookUpTable
+
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.INFO)
 
 router = APIRouter(prefix="/test", tags=["test"])
 
@@ -25,3 +29,17 @@ def get_stocks():
 def test():
     resp = requests.get(settings.scheduler_conn + "twelveDataInfo")
     return resp.json()
+
+
+@router.get("/unique")
+def unique():
+    table = UniqueLookUpTable()
+    return {"names": list(table.get_unique())}
+
+
+@router.get("/mongodata")
+def mongodata():
+    collection = MongoDB().db["stocks_39YA_XDUS"]
+    for obj in collection.find({}):
+        logger.info(obj)
+    return {}

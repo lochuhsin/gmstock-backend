@@ -1,10 +1,14 @@
-from fastapi import FastAPI
-import pymongo
 import logging
-from config import settings
-from routers import script_controller, testing
-from sqlalchemy_utils.functions import database_exists
 import time
+
+from fastapi import FastAPI
+from pymongo import MongoClient
+from sqlalchemy_utils.functions import database_exists
+
+from config import settings
+from db.mongo import get_collections
+from routers import script_controller, testing
+from utils.singleton import UniqueLookUpTable
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -18,7 +22,7 @@ RETRY = 5
 
 @app.on_event("startup")
 def check_mongodb_exist():
-    client = pymongo.MongoClient(settings.mongo_conn)
+    client = MongoClient(settings.mongo_conn)
     db_list: list[str] = client.list_database_names()
 
     if settings.mongo_db_name not in db_list:
@@ -33,7 +37,6 @@ def __retry_db_conn(conn: str) -> bool:
             return True
         time.sleep(WAITTING_TIME)
         retry_count += 1
-
     return False
 
 
@@ -46,6 +49,11 @@ def check_postgres_exist():
     if not __retry_db_conn(settings.rmdb_scheduler_conn):
         raise ValueError("Scheduler database doesn't exists")
     logger.info("Scheduler database checking complete")
+
+
+@app.on_event("startup")
+def initialize_symbol_table():
+    UniqueLookUpTable(unique=get_collections())
 
 
 @app.get("/")
