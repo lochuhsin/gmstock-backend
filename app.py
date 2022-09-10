@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from sqlalchemy_utils.functions import database_exists
 from config import settings
 from db.mongo import get_collections
-from routers import data_controller, script_controller, testing
+from routers import data, script, testing
 from utils.util import unique_table_selector
 from utils.singleton import ScriptInfoCache
 from db.info import get_scripts
@@ -13,8 +13,8 @@ from db.info import get_scripts
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
 app = FastAPI()
-app.include_router(script_controller.router)
-app.include_router(data_controller.router)
+app.include_router(script.router)
+app.include_router(data.router)
 app.include_router(testing.router)
 
 WAITTING_TIME = 10

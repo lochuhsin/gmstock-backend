@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, WebSocket
 
 from internal.data_service import get_timeseries
 from utils.util import unique_table_selector
@@ -44,3 +44,13 @@ async def list_timseries(unique: str):
 async def list_uniques(product_type: str):
     unique_table = unique_table_selector(product_type)
     return {"status": 200, "results": list(unique_table.get_uniques())}
+
+
+@router.websocket("/timeseries")
+async def timeseries_websocket(websocket: WebSocket):
+    import time
+    await websocket.accept()
+    while True:
+        time.sleep(1)
+        await websocket.send_text(f"this is what u have sended: {'asdfasd'}")
+
