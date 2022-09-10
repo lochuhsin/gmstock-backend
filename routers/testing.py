@@ -17,11 +17,6 @@ router = APIRouter(prefix="/test", tags=["test"])
 
 @router.get("/stocks")
 def get_stocks():
-    engine = create_engine(settings.rmdb_scheduler_conn)
-    session = Session(engine)
-    query = select(Stocks)
-    resp = session.scalars(query)  # generator
-    logging.error(type(resp))
     return {"status": 204}
 
 

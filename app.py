@@ -1,14 +1,14 @@
 import logging
 import time
-
 from fastapi import FastAPI
 from pymongo import MongoClient
 from sqlalchemy_utils.functions import database_exists
-
 from config import settings
 from db.mongo import get_collections
 from routers import data_controller, script_controller, testing
 from utils.util import unique_table_selector
+from utils.singleton import ScriptInfoCache
+from db.info import get_scripts
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -43,11 +43,7 @@ def __retry_db_conn(conn: str) -> bool:
 
 @app.on_event("startup")
 def check_postgres_exist():
-    if not __retry_db_conn(settings.rmdb_backend_conn):
-        raise ValueError("Backend database doesn't exists")
-    logger.info("Backend database checking complete")
-
-    if not __retry_db_conn(settings.rmdb_scheduler_conn):
+    if not __retry_db_conn(settings.rmdb_postgres_conn):
         raise ValueError("Scheduler database doesn't exists")
     logger.info("Scheduler database checking complete")
 
@@ -68,6 +64,13 @@ def initialize_symbol_table():
             continue
         unique_table = unique_table_selector(table)
         unique_table.add(collection)
+
+
+@app.on_event("startup")
+def initialize_script_cache():
+    scripts = get_scripts()
+    cache = ScriptInfoCache(((sc.name, sc.filepath) for sc in scripts))
+    logger.info(len(cache))
 
 
 @app.get("/")

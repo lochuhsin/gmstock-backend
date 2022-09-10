@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, HTTPException
+
 
 from internal.file_service import add_script, get_scripts
 
@@ -24,8 +25,15 @@ async def get_script(script_id):
 
 @router.post("/")
 async def create_script(description: str | None, file: UploadFile):
+
+    *_, ext = file.filename.split(".")
+    if ext != "py":
+        logger.info("error filetype")
+        raise HTTPException(status_code=404, detail=f"Invalid file type: {file.filename}")
+
     upload_time = datetime.utcnow()
     add_script(description, upload_time, file)
+
     return {"status": 204, "filename": file.filename}
 
 

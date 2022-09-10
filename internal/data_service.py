@@ -5,7 +5,6 @@ from db.mongo import get_timeserise_by_unique
 
 # TODO: add DTO model
 def get_timeseries(unique) -> list[dict]:
-
     # preventing duplicate data
     datetime_set: set = set()
     timeseries: list = []
