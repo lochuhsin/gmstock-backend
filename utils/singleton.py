@@ -7,44 +7,44 @@ from utils._singleton import Singleton
 
 
 class ScriptInfoCache(metaclass=Singleton):
-    def __init__(self, file_namepaths: Iterable[tuple] = None):
-        self.name_path = dict() if not file_namepaths else {name: path for name, path in file_namepaths}
+    def __init__(self, file_idpaths: Iterable[tuple] = None):
+        self.id_path = dict() if not file_idpaths else {_id: path for _id, path in file_idpaths}
 
-    def add(self, name, path) -> tuple[bool, str]:
-        if name in self.name_path:
+    def add(self, _id: int, path: str) -> tuple[bool, str]:
+        if _id in self.id_path:
             return False, "file exists"
-        self.name_path[name] = path
+        self.id_path[_id] = path
         return True, ""
 
-    def update(self, name: str, path: str) -> tuple[bool, str]:
-        if name not in self.name_path:
+    def update(self, _id: int, path: str) -> tuple[bool, str]:
+        if _id not in self.id_path:
             return False, "file not exists"
-        self.name_path[name] = path
+        self.id_path[_id] = path
         return True, ""
 
     def clear(self) -> tuple[bool, str]:
-        self.name_path = dict()
+        self.id_path = dict()
         return True, ""
 
-    def remove(self, name: str) -> tuple[bool, str]:
-        if name not in self.name_path:
+    def remove(self, _id: int) -> tuple[bool, str]:
+        if _id not in self.id_path:
             return False, "file not exists"
-        del self.name_path[name]
+        del self.id_path[_id]
         return True, ""
 
-    def get_path_by_name(self, name: str) -> tuple[bool, str]:
-        if name not in self.name_path:
+    def get_path_by_id(self, _id: int) -> tuple[bool, str]:
+        if _id not in self.id_path:
             return False, "file not exists"
-        return True, self.name_path[name]
+        return True, self.id_path[_id]
 
-    def get_name_list(self) -> tuple[bool, list]:
-        return True, list(self.name_path.keys())
+    def get_id_list(self) -> tuple[bool, list]:
+        return True, list(self.id_path.keys())
 
-    def __contains__(self, name: str):
-        return name in self.name_path
+    def __contains__(self, _id: int):
+        return _id in self.id_path
 
     def __len__(self):
-        return len(self.name_path)
+        return len(self.id_path)
 
 
 class ErrorScriptInfoCache(metaclass=Singleton):

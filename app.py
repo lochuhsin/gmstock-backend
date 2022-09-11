@@ -69,7 +69,7 @@ def initialize_symbol_table():
 @app.on_event("startup")
 def initialize_script_cache():
     scripts = get_scripts()
-    cache = ScriptInfoCache(((sc.name, sc.filepath) for sc in scripts))
+    cache = ScriptInfoCache(((sc.id, sc.filepath) for sc in scripts))
     logger.info(len(cache))
 
 
