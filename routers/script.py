@@ -21,6 +21,8 @@ async def get_script(script_id):
     return {"status": 204, "result": get_script_by_id(script_id)}
 
 
+
+
 @router.delete("/{script_id}")
 async def remove_script(script_id):
     rm_script(script_id)
