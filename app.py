@@ -9,6 +9,8 @@ from routers import data, script, testing
 from utils.util import unique_table_selector
 from utils.singleton import ScriptInfoCache
 from db.info import get_scripts
+from apscheduler.schedulers.background import BackgroundScheduler
+from schedule.schedule import update_product_tables
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -55,7 +57,7 @@ def check_postgres_exist():
 # etf_<symbol>_<mic_code>
 # indices_<symbol>_<country>
 @app.on_event("startup")
-def initialize_symbol_table():
+def initialize_unique_table():
     logger.info("start initializing unique symbol singleton")
 
     for collection in get_collections():
@@ -71,6 +73,17 @@ def initialize_script_cache():
     scripts = get_scripts()
     cache = ScriptInfoCache(((sc.id, sc.filepath) for sc in scripts))
     logger.info(len(cache))
+
+
+def test():
+    logger.info("helloworld")
+
+
+@app.on_event("startup")
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(test, "cron", second="*/2")
+    scheduler.start()
 
 
 @app.get("/")

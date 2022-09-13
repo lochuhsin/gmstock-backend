@@ -1,38 +1,17 @@
-from fastapi import APIRouter, WebSocket
-
+from fastapi import APIRouter, WebSocket, HTTPException
 from internal.data_service import get_timeseries
-from utils.util import unique_table_selector
+from utils.util import unique_table_selector, ProductType
 
 router = APIRouter(prefix="/data", tags=["data"])
 
 
-@router.get("/stocks")
-async def list_stock():
-    return {"status": 204}
-
-
-@router.get("/forexpair")
-async def list_forexpair():
-    return {"status": 204}
-
-
-@router.get("/cryptocurrency")
-async def list_cryptocurrency():
-    return {"status": 204}
-
-
-@router.get("/etf")
-async def list_etf():
-    return {"status": 204}
-
-
-@router.get("/indices")
-async def list_indices():
-    return {"status": 204}
+@router.get("/product_type")
+async def list_products():
+    return {"status": 200, "product_type": [p.value for p in ProductType]}
 
 
 @router.get("/timeseries/{unique}")
-async def list_timseries(unique: str):
+async def list_timeseries(unique: str):
     product, *_ = unique.split("_")
     unique_table = unique_table_selector(product)
     if unique not in unique_table:
@@ -43,6 +22,8 @@ async def list_timseries(unique: str):
 @router.get("/uniques/{product_type}")
 async def list_uniques(product_type: str):
     unique_table = unique_table_selector(product_type)
+    if unique_table is None:
+        raise HTTPException(400, "Product type not supported")
     return {"status": 200, "results": list(unique_table.get_uniques())}
 
 

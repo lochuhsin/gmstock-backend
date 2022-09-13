@@ -2,11 +2,7 @@ import logging
 
 import requests
 from fastapi import APIRouter
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
-
 from config import settings
-from dto.db_object import Stocks
 from utils.singleton import MongoDB
 
 logger = logging.getLogger("uvicorn")
