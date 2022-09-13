@@ -1,16 +1,18 @@
 import logging
 import time
+
+from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI
 from pymongo import MongoClient
 from sqlalchemy_utils.functions import database_exists
+
 from config import settings
+from db.info import get_scripts
 from db.mongo import get_collections
 from routers import data, script, testing
-from utils.util import unique_table_selector
+from schedule.schedule import update_product_tables, update_script_cache
 from utils.singleton import ScriptInfoCache
-from db.info import get_scripts
-from apscheduler.schedulers.background import BackgroundScheduler
-from schedule.schedule import update_product_tables
+from utils.util import unique_table_selector
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -82,7 +84,8 @@ def test():
 @app.on_event("startup")
 def start_scheduler():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(test, "cron", second="*/2")
+    scheduler.add_job(update_product_tables, "cron", week="*")
+    scheduler.add_job(update_script_cache, "cron", week="*")
     scheduler.start()
 
 

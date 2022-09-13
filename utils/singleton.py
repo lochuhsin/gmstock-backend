@@ -1,19 +1,31 @@
 from typing import Generator, Iterable
+
 from pymongo import MongoClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+
 from config import settings
 from utils._singleton import Singleton
 
 
 class ScriptInfoCache(metaclass=Singleton):
     def __init__(self, file_idpaths: Iterable[tuple] = None):
-        self.id_path = dict() if not file_idpaths else {_id: path for _id, path in file_idpaths}
+        self.id_path = (
+            dict() if not file_idpaths else {_id: path for _id, path in file_idpaths}
+        )
 
     def add(self, _id: int, path: str) -> tuple[bool, str]:
         if _id in self.id_path:
             return False, "file exists"
         self.id_path[_id] = path
+        return True, ""
+
+    def bulk_upsert(self, id_path: list[tuple[int, str]]) -> tuple[bool, str]:
+        try:
+            for _id, path in id_path:
+                self.id_path[_id] = path
+        except Exception as e:
+            return False, str(e)
         return True, ""
 
     def update(self, _id: int, path: str) -> tuple[bool, str]:
