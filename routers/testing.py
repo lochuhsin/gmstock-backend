@@ -4,11 +4,21 @@ import requests
 from fastapi import APIRouter
 from config import settings
 from utils.singleton import MongoDB
+from db.mongo import get_collections
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
 
 router = APIRouter(prefix="/test", tags=["test"])
+
+
+@router.get("/collections")
+def get_collection_list():
+    collections = []
+    for collection in get_collections():
+        collections.append(collection)
+
+    return {"status": 200, "collections": collections}
 
 
 @router.get("/stocks")
