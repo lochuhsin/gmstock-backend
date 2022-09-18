@@ -26,7 +26,9 @@ def update_script_cache():
     logger.info("start updating script cache")
     scripts = get_scripts()
     cache = ScriptInfoCache()
-    status, msg = cache.update(((sc.id, sc.filepath) for sc in scripts))
+    status, msg = cache.bulk_upsert(
+        id_path=list((sc.id, sc.filepath) for sc in scripts)
+    )
     if not status:
         logger.error("Script cache update failed")
     logger.error("Script cache update complete")

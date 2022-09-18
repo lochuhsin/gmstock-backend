@@ -84,7 +84,7 @@ def test():
 @app.on_event("startup")
 def start_scheduler():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(update_product_tables, "cron", week="*")
+    scheduler.add_job(update_product_tables, "cron", day="*")
     scheduler.add_job(update_script_cache, "cron", week="*")
     scheduler.start()
 
