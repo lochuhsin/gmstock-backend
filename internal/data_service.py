@@ -1,6 +1,6 @@
 from typing import Generator
 
-from db.mongo import get_timeserise_by_unique
+from db.mongo import get_timeserise_by_unique, get_timeseries_insert_stream
 
 
 # TODO: add DTO model
@@ -17,3 +17,8 @@ def get_timeseries(unique) -> list[dict]:
         datetime_set.add(datatime)
 
     return timeseries
+
+
+def timeseries_stream() -> Generator:
+    stream: Generator = get_timeseries_insert_stream()
+    return stream

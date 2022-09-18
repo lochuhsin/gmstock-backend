@@ -1,6 +1,7 @@
 from fastapi import APIRouter, WebSocket, HTTPException
-from internal.data_service import get_timeseries
+from internal.data_service import get_timeseries, timeseries_stream
 from utils.util import unique_table_selector, ProductType
+import json
 
 router = APIRouter(prefix="/data", tags=["data"])
 
@@ -27,11 +28,21 @@ async def list_uniques(product_type: str):
     return {"status": 200, "results": list(unique_table.get_uniques())}
 
 
-@router.websocket("/timeseries")
-async def timeseries_websocket(websocket: WebSocket):
-    import time
+@router.websocket("/timeseries/ws")
+async def timeseries_origin(websocket: WebSocket):
     await websocket.accept()
     while True:
-        time.sleep(1)
-        await websocket.send_text(f"this is what u have sended: {'asdfasd'}")
+        stream = timeseries_stream()
+        for data in stream:
+            unique: str = data.get("ns").get("coll")
+            trade_info: dict = data.get("fullDocument")
+            trade_info.pop("_id")
+            trade_info["datetime"] = trade_info["datetime"].strftime("%Y-%m-%d %H:%M:%S")
+            json_str = json.dumps(
+                {
+                    "unique": unique,
+                    "trade_info": trade_info
+                }
+            )
+            await websocket.send_text(json_str)
 
