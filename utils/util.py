@@ -1,3 +1,5 @@
+import importlib
+import json
 from enum import Enum
 
 from utils.singleton import (
@@ -9,6 +11,19 @@ from utils.singleton import (
 )
 
 
+def parse_stream_to_json(data: dict, unique) -> str:
+    trade_info: dict = data.get("fullDocument")
+    trade_info.pop("_id")
+    trade_info["datetime"] = trade_info["datetime"].strftime("%Y-%m-%d %H:%M:%S")
+    return json.dumps({"unique": unique, "trade_info": trade_info})
+
+
+def load_module(path: str) -> any:
+    module = importlib.import_module(path)
+    instance = module.CustomScript()
+    return instance
+
+
 class ProductType(Enum):
     Stock = "stocks"
     ForexPair = "forexpair"
@@ -18,7 +33,6 @@ class ProductType(Enum):
 
 
 def unique_table_selector(product_type: Enum | str):
-
     if product_type == ProductType.Stock or product_type == ProductType.Stock.value:
         return UniqueStocksTable()
 

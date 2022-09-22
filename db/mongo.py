@@ -14,7 +14,14 @@ def get_timeserise_by_unique(unique: str) -> Generator:
 
 
 def get_timeseries_insert_stream() -> Generator:
-    pipeline = [{'$match': {'operationType': 'insert'}}]
+    pipeline = [{"$match": {"operationType": "insert"}}]
     with MongoDB().db.watch(pipeline) as stream:
+        for insert_change in stream:
+            yield insert_change
+
+
+def get_timeseries_insert_stream_unique(unique: str) -> Generator:
+    pipeline = [{"$match": {"operationType": "insert"}}]
+    with MongoDB().db.collection[unique].watch(pipeline) as stream:
         for insert_change in stream:
             yield insert_change
