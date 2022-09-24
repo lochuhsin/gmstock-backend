@@ -1,5 +1,6 @@
 import importlib
 import json
+import logging
 from enum import Enum
 
 from utils.singleton import (
@@ -10,6 +11,9 @@ from utils.singleton import (
     UniqueStocksTable,
 )
 
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.INFO)
+
 
 def parse_stream_to_json(data: dict, unique) -> str:
     trade_info: dict = data.get("fullDocument")
@@ -18,8 +22,15 @@ def parse_stream_to_json(data: dict, unique) -> str:
     return json.dumps({"unique": unique, "trade_info": trade_info})
 
 
-def load_module(path: str) -> any:
-    module = importlib.import_module(path)
+def load_script_instance(path: str) -> any:
+    # remove extern
+    pure_path = path[:-3]  # remove .py
+
+    path_list = pure_path.split("/")
+    del path_list[:2]
+    module_path = ".".join(path_list)
+
+    module = importlib.import_module(module_path)
     instance = module.CustomScript()
     return instance
 

@@ -21,3 +21,18 @@ Add migration
 2. modify script.py.mako
 3. alembic revision -m "<purpose>"
 4. alembic upgrade head
+
+
+# streaming data format
+"""
+ dataformat
+ {
+  "_id":"ObjectId(""632dd03e1133651df91dbecc"")",
+  "datetime":datetime.datetime(2022,9,20,0,0),
+  "open":168.89999,
+  "high":170.3,
+  "low":166.10001,
+  "close":166.3,
+  "volume":1181806
+}
+"""

@@ -11,8 +11,8 @@ from db.info import get_scripts
 from db.mongo import get_collections
 from routers import data, script, testing
 from schedule.schedule import update_product_tables, update_script_cache
-from utils.singleton import ScriptInfoCache
-from utils.util import unique_table_selector
+from utils.singleton import ScriptInstanceCache
+from utils.util import load_script_instance, unique_table_selector
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -73,8 +73,9 @@ def initialize_unique_table():
 @app.on_event("startup")
 def initialize_script_cache():
     scripts = get_scripts()
-    cache = ScriptInfoCache(((sc.id, sc.filepath) for sc in scripts))
-    logger.info(len(cache))
+    ScriptInstanceCache(
+        ((int(sc.id), load_script_instance(sc.filepath)) for sc in scripts)
+    )
 
 
 def test():

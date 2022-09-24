@@ -2,8 +2,8 @@ import logging
 
 from db.info import get_scripts
 from db.mongo import get_collections
-from utils.singleton import ScriptInfoCache
-from utils.util import unique_table_selector
+from utils.singleton import ScriptInstanceCache
+from utils.util import load_script_instance, unique_table_selector
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -25,10 +25,14 @@ def update_product_tables():
 def update_script_cache():
     logger.info("start updating script cache")
     scripts = get_scripts()
-    cache = ScriptInfoCache()
-    status, msg = cache.bulk_upsert(
-        id_path=list((sc.id, sc.filepath) for sc in scripts)
-    )
-    if not status:
-        logger.error("Script cache update failed")
-    logger.error("Script cache update complete")
+    cache = ScriptInstanceCache()
+
+    for sc in scripts:
+        instance = load_script_instance(sc.filepath)
+        status, msg = cache.upsert_script_by_id(sc.id, instance)
+        if not status:
+            logger.warning(
+                f"during upsert script instance cache, following error: {msg}"
+            )
+
+    logger.info("Script cache update complete")

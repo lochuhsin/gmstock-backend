@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, WebSocket
 from internal.data_service import (
     get_timeseries,
     timeseries_stream,
+    timeseries_stream_calculated,
     timeseries_stream_unique,
 )
 from utils.util import ProductType, parse_stream_to_json, unique_table_selector
@@ -49,9 +50,8 @@ async def timeseries_origin(websocket: WebSocket):
         await websocket.send_json(json_str)
 
 
-@router.websocket("/timeseries/{unique}/ws")
+@router.websocket("/timeseries/original/{unique}/ws")
 async def timeseries_origin_unique(unique: str, websocket: WebSocket):
-
     # implement get last 1000 days data
     await websocket.accept()
     stream = timeseries_stream_unique(unique)
@@ -64,5 +64,9 @@ async def timeseries_origin_unique(unique: str, websocket: WebSocket):
 @router.websocket("/timeseries/calculated/ws")
 async def timeseries_calculated(websocket: WebSocket):
     await websocket.accept()
+    stream = timeseries_stream_calculated()
     while True:
-        break
+        data = next(stream)
+        unique: str = data.get("ns").get("coll")
+        json_str: str = parse_stream_to_json(data, unique)
+        await websocket.send_json(json_str)
