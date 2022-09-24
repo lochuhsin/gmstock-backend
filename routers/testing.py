@@ -1,9 +1,13 @@
 import logging
 import requests
-from fastapi import APIRouter
+from fastapi import APIRouter, WebSocket
 from config import settings
 from utils.singleton import MongoDB
 from db.mongo import get_collections
+import importlib
+import asyncio
+from internal import data_service
+from utils.util import parse_stream_to_json
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -37,3 +41,15 @@ def mongodata():
     for obj in collection.find({}):
         logger.info(obj)
     return {}
+
+
+@router.websocket("/ws")
+async def test_ws(websocket: WebSocket):
+    await websocket.accept()
+    gen = data_service.test()
+    while True:
+        data = next(gen)
+        logger.info(f"this is data {data}")
+        json_str = parse_stream_to_json(data, "____test____")
+        await websocket.send_json({"result": json_str})
+        await asyncio.sleep(0.1)

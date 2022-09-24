@@ -56,6 +56,31 @@ def loop_script_dict(data, script_dict: dict) -> Generator:
 
         yield new_data
 
+import datetime
+def f():
+    count = 0
+    while True:
+        data = {"fullDocument": {
+            "_id": "ObjectId(""632dd03e1133651df91dbecc"")",
+            "datetime": datetime.datetime(2022, 9, 20, 0, 0),
+            "open": count,
+            "high": count,
+            "low": count,
+            "close": count,
+            "volume": count
+        }}
+        yield data
+        count += 1
+
+
+def test():
+    cache = ScriptInstanceCache()
+    stream: Generator = f()
+    for data in stream:
+        status, script_dict_all = cache.get_script_all_unique()
+        for res in loop_script_dict(data, script_dict_all):
+            yield res
+
 
 def timeseries_stream_calculated() -> Generator:
     cache = ScriptInstanceCache()
